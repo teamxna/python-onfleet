@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import unittest
+import io
 import os
-from onfleet import metadata
 from distutils.cmd import Command
 import re
 
@@ -12,7 +12,7 @@ try:
 except ImportError:
     from distutils.core import setup
 
-with open(os.path.join(os.path.dirname(__file__), "README.rst")) as file:
+with io.open(os.path.join(os.path.dirname(__file__), "README.rst")) as file:
     long_description = file.read()
 
     id_regex = re.compile(r"<\#([\w-]+)>")
@@ -37,6 +37,7 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
 ]
 
+
 class TestCommand(Command):
     user_options = []
 
@@ -51,20 +52,27 @@ class TestCommand(Command):
         suite = unittest.TestLoader().loadTestsFromTestCase(TestOnfleetAPI)
         unittest.TextTestRunner(verbosity=2).run(suite)
 
+__version__ = "0.0.1"
+__author__ = "Dan Loewenherz"
+__copyright__ = "Copyright 2015, Lionheart Software"
+__maintainer__ = "Dan Loewenherz"
+__email__ = "dan@lionheartsw.com"
+__license__ = "Apache 2.0"
 
 setup(
-    author=metadata.__author__,
-    author_email=metadata.__email__,
+    author=__author__,
+    author_email=__email__,
     classifiers=classifiers,
     cmdclass={'test': TestCommand},
     description="A Python wrapper for Onfleet",
     install_requires=["requests"],
     keywords="onfleet",
-    license=metadata.__license__,
+    license=__license__,
     long_description=long_description,
     name='onfleet',
     package_data={'': ['LICENSE', 'README.rst']},
+    include_package_data=True,
     packages=['onfleet'],
     url="http://github.com/lionheart/python-onfleet",
-    version=metadata.__version__,
+    version=__version__,
 )
