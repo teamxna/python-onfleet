@@ -1,8 +1,8 @@
 import datetime
 import json
 import requests
-import models
-import utils
+from . import models
+from . import utils
 from .exceptions import OnfleetException, OnfleetDuplicateKeyException
 
 
@@ -94,7 +94,6 @@ class ComplexEncoder(json.JSONEncoder):
             }
 
             optional_properties = {'phone': obj.phone}
-
         if payload is None:
             return json.JSONEncoder.default(self, obj)
         else:
@@ -126,6 +125,8 @@ class OnfleetCall(object):
         return self
 
     def __getitem__(self, k):
+        if not k:
+            raise KeyError("You can't retrieve a falsy object!")
         self.components.append(k)
         return self
 
@@ -147,7 +148,6 @@ class OnfleetCall(object):
             data = ComplexEncoder().encode(args[0])
         else:
             data = None
-
         response = fun(url, data=data, params=kwargs, auth=(self.api_key, ''), verify=False)
 
         parse_dictionary = {
