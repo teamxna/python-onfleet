@@ -1,6 +1,3 @@
-import urllib2
-
-
 class OnfleetException(Exception):
     pass
 
