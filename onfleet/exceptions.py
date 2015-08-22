@@ -4,3 +4,7 @@ class OnfleetException(Exception):
 
 class OnfleetDuplicateKeyException(OnfleetException):
     pass
+
+
+class OnfleetGeocodingError(OnfleetException):
+    pass
