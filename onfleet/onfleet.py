@@ -4,7 +4,7 @@ import requests
 from . import models
 from . import utils
 from .exceptions import (
-    OnfleetException, OnfleetDuplicateKeyException, OnfleetGeocodingError
+    OnfleetException, OnfleetDuplicateKeyException, OnfleetGeocodingException
 )
 
 
@@ -189,7 +189,7 @@ class OnfleetCall(object):
                 if error_type == 'duplicateKey':
                     raise OnfleetDuplicateKeyException(error_string)
                 elif error_cause == 'Geocoding errors found.':
-                    raise OnfleetGeocodingError(error_string)
+                    raise OnfleetGeocodingException(error_string)
 
                 raise OnfleetException(error_string)
 
