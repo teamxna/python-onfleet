@@ -1,10 +1,9 @@
-class OnfleetException(Exception):
-    pass
+class OnfleetError(Exception):
+    """Generic error encountered with onfleet."""
 
-
-class OnfleetDuplicateKeyException(OnfleetException):
-    pass
-
-
-class OnfleetGeocodingException(OnfleetException):
-    pass
+    def __init__(self, message, type, code, cause, *args):
+        self.message = message
+        self.type = type
+        self.code = code
+        self.cause = cause
+        super(OnfleetError, self).__init__(message, *args)

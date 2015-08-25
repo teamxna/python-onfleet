@@ -3,9 +3,7 @@ import json
 import requests
 from . import models
 from . import utils
-from .exceptions import (
-    OnfleetException, OnfleetDuplicateKeyException, OnfleetGeocodingException
-)
+from .exceptions import OnfleetError
 
 
 ONFLEET_API_ENDPOINT = "https://onfleet.com/api/v2/"
@@ -180,18 +178,8 @@ class OnfleetCall(object):
                 error_code = error_data['error']
                 error_message = error_data['message']
 
-                error_string = '{code}: {message} ({cause})'.format(
-                    code=error_code,
-                    message=error_message,
-                    cause=error_cause,
-                )
-
-                if error_type == 'duplicateKey':
-                    raise OnfleetDuplicateKeyException(error_string)
-                elif error_cause == 'Geocoding errors found.':
-                    raise OnfleetGeocodingException(error_string)
-
-                raise OnfleetException(error_string)
+                raise OnfleetError(error_message, error_type, error_code,
+                    error_cause)
 
             if parse_response and parse_as is not None:
                 if isinstance(json_response, list):
