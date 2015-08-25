@@ -180,7 +180,7 @@ class OnfleetCall(object):
                 error_code = error_data['error']
                 error_message = error_data['message']
 
-                error_string = '{code}: {message} (cause)'.format(
+                error_string = '{code}: {message} ({cause})'.format(
                     code=error_code,
                     message=error_message,
                     cause=error_cause,
