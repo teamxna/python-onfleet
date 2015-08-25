@@ -3,10 +3,11 @@ import json
 import requests
 from . import models
 from . import utils
-from .exceptions import OnfleetException, OnfleetDuplicateKeyException
+from .exceptions import OnfleetError
 
 
 ONFLEET_API_ENDPOINT = "https://onfleet.com/api/v2/"
+
 
 class ComplexEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -168,14 +169,17 @@ class OnfleetCall(object):
             json_response = response.json()
 
             if 'code' in json_response:
-                message = json_response['message']
-                cause = message.get('cause', '')
+                # So presumably this is an error response,
+                # Map these to better python variable names, since onfleet uses
+                # horrible naming conventions
+                error_type = json_response['code']
+                error_data = json_response['message']
+                error_cause = error_data['cause']
+                error_code = error_data['error']
+                error_message = error_data['message']
 
-                if isinstance(cause, dict) and cause['type'] == 'duplicateKey':
-                    raise OnfleetDuplicateKeyException("{}: {} (value: '{}', key: '{}')" \
-                        .format(message['error'], message['message'], cause['value'], cause['key']))
-                raise OnfleetException("{}: {} ({})" \
-                    .format(message['error'], message['message'], cause))
+                raise OnfleetError(error_message, error_type, error_code,
+                    error_cause)
 
             if parse_response and parse_as is not None:
                 if isinstance(json_response, list):
