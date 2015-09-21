@@ -12,7 +12,7 @@ try:
 except ImportError:
     from distutils.core import setup
 
-with io.open(os.path.join(os.path.dirname(__file__), "README.rst")) as file:
+with io.open(os.path.join(os.path.dirname(__file__), "README.rst"), encoding='utf-8') as file:
     long_description = file.read()
 
     id_regex = re.compile(r"<\#([\w-]+)>")
