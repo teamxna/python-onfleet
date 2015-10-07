@@ -1,3 +1,13 @@
+import re
+
+options_re = re.compile(r'"(.*?)"')
+
+
+def parse_options(self):
+    """Parse the onfleet string for the proposed options."""
+    return options_re.findall(self.cause)
+
+
 class OnfleetError(Exception):
     """Generic error encountered with onfleet."""
 
