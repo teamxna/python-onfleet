@@ -7,3 +7,11 @@ class OnfleetError(Exception):
         self.code = code
         self.cause = cause
         super(OnfleetError, self).__init__(message, *args)
+
+
+class MultipleDestinationsError(OnfleetError):
+    """Error for when the API returns multiple destination options."""
+
+    def __init__(self, options, *args, **kwargs):
+        self.options = options
+        super(MultipleDestinationsError, self).__init__(*args, **kwargs)
