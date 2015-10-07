@@ -3,7 +3,7 @@ import json
 import requests
 from . import models
 from . import utils
-from .exceptions import OnfleetError
+from .exceptions import OnfleetError, MultipleDestinationsError, parse_options
 
 
 ONFLEET_API_ENDPOINT = "https://onfleet.com/api/v2/"
@@ -177,6 +177,20 @@ class OnfleetCall(object):
                 error_cause = error_data['cause']
                 error_code = error_data['error']
                 error_message = error_data['message']
+
+                options = parse_options(error_cause)
+
+                if options:
+                    # If the options regex returned some options, this must be
+                    # a multiple destination issue. This is the only way to
+                    # tell since onfleet doesn't use distinct error codes
+                    raise MultipleDestinationsError(
+                        options,
+                        error_message,
+                        error_type,
+                        error_code,
+                        error_cause,
+                    )
 
                 raise OnfleetError(error_message, error_type, error_code,
                     error_cause)
