@@ -1,9 +1,27 @@
+import ast
 import datetime
 import json
+import re
 import requests
 from . import models
 from . import utils
-from .exceptions import OnfleetError, MultipleDestinationsError, parse_options
+from .exceptions import OnfleetError, MultipleDestinationsError
+
+# This regex takes the returned onfleet string and gets the list that onfleet
+# returns as a string literal, i.e.
+# "['1252 Howard St, San Francisco, CA', '73 Sumner St, San Francisco, CA']"
+options_re = re.compile(r'Options = (\[.*\])')
+
+
+def parse_options(cause):
+    """Parse the onfleet string for the proposed options."""
+    options_list_as_string = options_re.search(cause)
+    if options_list_as_string:
+        # Onfleet returns a string that contains a list containing strings,
+        # which is valid python. Let's return the options as an actual python
+        # list
+        return ast.literal_eval(options_list_as_string.group(1))
+    return None
 
 
 ONFLEET_API_ENDPOINT = "https://onfleet.com/api/v2/"
