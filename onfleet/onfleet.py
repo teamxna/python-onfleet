@@ -1,4 +1,3 @@
-import ast
 import datetime
 import json
 import re
@@ -15,12 +14,17 @@ options_re = re.compile(r'Options = (\[.*\])')
 
 def parse_options(cause):
     """Parse the onfleet string for the proposed options."""
-    options_list_as_string = options_re.search(cause)
-    if options_list_as_string:
+    match = options_re.search(cause)
+    if match:
         # Onfleet returns a string that contains a list containing strings,
-        # which is valid python. Let's return the options as an actual python
-        # list
-        return ast.literal_eval(options_list_as_string.group(1))
+        # which should be valid JSON. Let's return the options as an actual
+        # python list
+        options_list_as_string = match.group(1)
+        try:
+            return json.loads(options_list_as_string)
+        except ValueError:
+            # Bad JSON, let this fall to return None
+            pass
     return None
 
 
