@@ -1,9 +1,31 @@
 import datetime
 import json
+import re
 import requests
 from . import models
 from . import utils
-from .exceptions import OnfleetError
+from .exceptions import OnfleetError, MultipleDestinationsError
+
+# This regex takes the returned onfleet string and gets the list that onfleet
+# returns as a string literal, i.e.
+# "['1252 Howard St, San Francisco, CA', '73 Sumner St, San Francisco, CA']"
+options_re = re.compile(r'Options = (\[.*\])')
+
+
+def parse_options(cause):
+    """Parse the onfleet string for the proposed options."""
+    match = options_re.search(cause)
+    if match:
+        # Onfleet returns a string that contains a list containing strings,
+        # which should be valid JSON. Let's return the options as an actual
+        # python list
+        options_list_as_string = match.group(1)
+        try:
+            return json.loads(options_list_as_string)
+        except ValueError:
+            # Bad JSON, let this fall to return None
+            pass
+    return None
 
 
 ONFLEET_API_ENDPOINT = "https://onfleet.com/api/v2/"
@@ -177,6 +199,20 @@ class OnfleetCall(object):
                 error_cause = error_data['cause']
                 error_code = error_data['error']
                 error_message = error_data['message']
+
+                options = parse_options(error_cause)
+
+                if options:
+                    # If the options regex returned some options, this must be
+                    # a multiple destination issue. This is the only way to
+                    # tell since onfleet doesn't use distinct error codes
+                    raise MultipleDestinationsError(
+                        options,
+                        error_message,
+                        error_type,
+                        error_code,
+                        error_cause,
+                    )
 
                 raise OnfleetError(error_message, error_type, error_code,
                     error_cause)
