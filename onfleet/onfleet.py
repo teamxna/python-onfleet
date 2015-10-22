@@ -200,19 +200,23 @@ class OnfleetCall(object):
                 error_code = error_data['error']
                 error_message = error_data['message']
 
-                options = parse_options(error_cause)
+                # error_cause is a string when there is a geocoding error,
+                # BUT its a dict in many other cases.... We only want to try
+                # to parse options if it's a string
+                if isinstance(error_cause, basestring):
+                    options = parse_options(error_cause)
 
-                if options:
-                    # If the options regex returned some options, this must be
-                    # a multiple destination issue. This is the only way to
-                    # tell since onfleet doesn't use distinct error codes
-                    raise MultipleDestinationsError(
-                        options,
-                        error_message,
-                        error_type,
-                        error_code,
-                        error_cause,
-                    )
+                    if options:
+                        # If the options regex returned some options, this must be
+                        # a multiple destination issue. This is the only way to
+                        # tell since onfleet doesn't use distinct error codes
+                        raise MultipleDestinationsError(
+                            options,
+                            error_message,
+                            error_type,
+                            error_code,
+                            error_cause,
+                        )
 
                 raise OnfleetError(error_message, error_type, error_code,
                     error_cause)
