@@ -61,7 +61,7 @@ class ComplexEncoder(json.JSONEncoder):
                 'tasks': 'tasks',
                 'name': 'name',
                 'phone': 'phone',
-                'teams': 'team_ids'
+                'team_ids': 'teams'
             }
         elif isinstance(obj, models.Address):
             payload = {
