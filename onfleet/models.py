@@ -260,6 +260,7 @@ class Worker(object):
             id=obj['id'],
             name=obj['name'],
             phone=obj['phone'],
+            tasks=obj['tasks'],
         )
 
         if obj['vehicle']:
