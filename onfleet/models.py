@@ -205,10 +205,11 @@ class Vehicle(object):
     MOTORCYCLE = "MOTORCYCLE"
     BICYCLE = "BICYCLE"
     TRUCK = "TRUCK"
+    WALKER = "WALKER"
 
 
     def __init__(self, vehicle_type, description=None, license_plate=None, color=None, id=None):
-        if vehicle_type not in [Vehicle.CAR, Vehicle.MOTORCYCLE, Vehicle.BICYCLE, Vehicle.TRUCK]:
+        if vehicle_type not in [Vehicle.CAR, Vehicle.MOTORCYCLE, Vehicle.BICYCLE, Vehicle.TRUCK, Vehicle.WALKER]:
             raise Exception
 
         self.id = id
